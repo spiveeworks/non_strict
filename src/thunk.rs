@@ -94,6 +94,21 @@ impl<T, F> ops::DerefMut for ThunkCell<T, F>
     }
 }
 
+impl<T, F> Into<T> for ThunkCell<T, F>
+    where F: FnOnce() -> T,
+          T: !From<ThunkMut<T, F>>,
+{
+    fn into(self) -> T {
+        unsafe {
+            match self.inner.into_inner() {
+                ThunkEnum::Function(f) => f(),
+                ThunkEnum::Value(value) => value,
+                ThunkEnum::Empty => panic!("Unwrapped empty ThunkCell"),
+            }
+        }
+    }
+}
+
 
 // like ThunkCell, but with normal mut semantics
 // using this may help the optimizer rearrange the code it is used in.
@@ -127,6 +142,20 @@ impl<T, F> ThunkMut<T, F> where F: FnOnce() -> T {
         }
     }
 }
+
+impl<T, F> Into<T> for ThunkMut<T, F>
+    where F: FnOnce() -> T,
+          T: !From<ThunkMut<T, F>>,
+{
+    fn into(self) -> T {
+        match self.inner {
+            ThunkEnum::Function(f) => f(),
+            ThunkEnum::Value(value) => value,
+            ThunkEnum::Empty => panic!("Unwrapped empty ThunkMut"),
+        }
+    }
+}
+
 
 
 impl<T, F> From<ThunkMut<T, F>> for ThunkCell<T, F>
