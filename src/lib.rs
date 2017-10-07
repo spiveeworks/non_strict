@@ -1,8 +1,10 @@
 // Library of objects for handling non-strict evaluation strategies
 
 pub use thunk::*;
+pub use memo::*;
 
 mod thunk;
+mod memo;
 
 
 #[cfg(test)]
