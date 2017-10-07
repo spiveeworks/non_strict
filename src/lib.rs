@@ -1,6 +1,3 @@
-#![feature(conservative_impl_trait)]
-#![feature(unboxed_closures)]
-
 use std::cell;
 use std::mem;
 use std::ops;
@@ -53,12 +50,6 @@ impl<T, F> LazyCell<T, F> where F: FnOnce() -> T {
             }
         }
     }
-
-    // borrow a LazyCell as an Fn closure
-    pub fn cache_fn<'a>(&'a self) -> impl Fn() -> &'a T {
-        move || &*self
-    }
-
 }
 
 impl<T, F: FnOnce() -> T> ops::Deref for LazyCell<T, F> {
