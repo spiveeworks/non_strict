@@ -1,8 +1,13 @@
 // Library of objects for handling non-strict evaluation strategies
 
+#![feature(unboxed_closures)]
+#![feature(fn_traits)]
+
 pub use thunk::*;
+pub use lazy::*;
 
 mod thunk;
+mod lazy;
 
 
 #[cfg(test)]
